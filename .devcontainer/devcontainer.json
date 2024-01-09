@@ -1,0 +1,22 @@
+{
+    "image": "node:20-bookworm",
+    "containerEnv": {
+        "GIT_EDITOR": "code --wait"
+    },
+    "customizations": {
+        "vscode": {
+            "extensions": [
+                "dbaeumer.vscode-eslint",
+                "esbenp.prettier-vscode",
+                "mhutchie.git-graph"
+            ]
+        }
+    },
+    "mounts": [
+        {
+            "type": "volume",
+            "source": "cw-iam-cache-node_modules",
+            "target": "${containerWorkspaceFolder}/node_modules"
+        }
+    ]
+}

@@ -14,5 +14,11 @@
         }
     },
     "eslint.experimental.useFlatConfig": true,
-    "typescript.updateImportsOnFileMove.enabled": "always"
+    "typescript.updateImportsOnFileMove.enabled": "always",
+    "terminal.integrated.defaultProfile.linux": "zsh",
+    "terminal.integrated.profiles.linux": {
+        "zsh": {
+            "path": "zsh"
+        }
+    }
 }

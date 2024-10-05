@@ -1,5 +1,5 @@
 {
-    "image": "node:20-bookworm",
+    "image": "node:22-bookworm",
     "containerEnv": {
         "GIT_EDITOR": "code --wait"
     },
@@ -10,6 +10,12 @@
                 "esbenp.prettier-vscode",
                 "mhutchie.git-graph"
             ]
+        }
+    },
+    "features": {
+        "ghcr.io/devcontainers/features/common-utils:2": {
+            "configureZshAsDefaultShell": true,
+            "upgradePackages": false
         }
     },
     "mounts": [

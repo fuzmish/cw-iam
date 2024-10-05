@@ -1,5 +1,5 @@
 {
-    "image": "node:22-bookworm",
+    "dockerFile": "./Dockerfile",
     "containerEnv": {
         "GIT_EDITOR": "code --wait"
     },
@@ -21,8 +21,8 @@
     "mounts": [
         {
             "type": "volume",
-            "source": "cw-iam-cache-node_modules",
-            "target": "${containerWorkspaceFolder}/node_modules"
+            "source": "cw-iam-pnpm-store",
+            "target": "/opt/pnpm/store"
         }
     ]
 }

@@ -21,6 +21,11 @@
     "mounts": [
         {
             "type": "volume",
+            "source": "cw-iam-cache-node_modules",
+            "target": "${containerWorkspaceFolder}/node_modules"
+        },
+        {
+            "type": "volume",
             "source": "cw-iam-pnpm-store",
             "target": "/opt/pnpm/store"
         }

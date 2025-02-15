@@ -1,13 +1,18 @@
 {
     "dockerFile": "./Dockerfile",
+    "build": {
+        "args": {
+            "PNPM_VERSION": "10.2.1"
+        }
+    },
     "containerEnv": {
+        "DISPLAY": "dummy",
         "GIT_EDITOR": "code --wait"
     },
     "customizations": {
         "vscode": {
             "extensions": [
-                "dbaeumer.vscode-eslint",
-                "esbenp.prettier-vscode",
+                "biomejs.biome",
                 "mhutchie.git-graph"
             ]
         }
@@ -21,13 +26,13 @@
     "mounts": [
         {
             "type": "volume",
-            "source": "cw-iam-cache-node_modules",
-            "target": "${containerWorkspaceFolder}/node_modules"
+            "source": "${devcontainerId}-pnpm-store",
+            "target": "/opt/pnpm/store"
         },
         {
             "type": "volume",
-            "source": "cw-iam-pnpm-store",
-            "target": "/opt/pnpm/store"
+            "source": "devcontainer-${devcontainerId}-node_modules",
+            "target": "${containerWorkspaceFolder}/node_modules"
         }
     ]
 }

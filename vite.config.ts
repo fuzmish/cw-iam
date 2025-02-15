@@ -1,11 +1,12 @@
-import react from "@vitejs/plugin-react"
+import react from "@vitejs/plugin-react-swc"
 import { defineConfig } from "vite"
 
-// https://vitejs.dev/config/
-export default ({ mode }) => {
-  return defineConfig({
-    base: "/cw-iam/", // GitHub Pages
-    plugins: [react()],
-    publicDir: mode === "development" ? "data" : "public"
-  })
-}
+// https://vite.dev/config/
+export default defineConfig(env => ({
+  base: "/cw-iam/", // GitHub Pages
+  plugins: [react()],
+  publicDir: env.mode === "development" ? "data" : "public",
+  server: {
+    host: "127.0.0.1"
+  }
+}))

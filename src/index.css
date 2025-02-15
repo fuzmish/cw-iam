@@ -1,0 +1,132 @@
+html,
+body,
+#root {
+  margin: 0;
+  padding: 0;
+  border: 0;
+  width: 100%;
+  height: 100%;
+  font-family: sans-serif;
+}
+@media (prefers-color-scheme: dark) {
+  #root {
+    background-color: #222222;
+    color: #eeeeee;
+  }
+}
+@media (prefers-color-scheme: light) {
+  #root {
+    background-color: #eeeeee;
+    color: #222222;
+  }
+}
+.highlight {
+  color: yellow;
+  font-weight: bold;
+}
+.hoverHighlight:hover,
+.hoverHighlight:hover * {
+  color: gray;
+  cursor: pointer;
+}
+ul.permissionMatches {
+  font-size: 75%;
+  margin: 0 1em;
+  padding: 0;
+}
+ul.permissionMatches li {
+  list-style: none;
+}
+.roleName {
+  font-size: 80%;
+}
+.selectionBox > .selectionBoxButton {
+  display: inline-block;
+  width: .8em;
+  height: .8em;
+  margin: .1em;
+  vertical-align: middle;
+  user-select: none;
+  border: 2px solid transparent;
+}
+.selectionBox > .selectionBoxButton:not(.readonly) {
+  cursor: pointer;
+  border-radius: .5em;
+}
+.selectionBox > .selectionBoxButton:nth-child(1) {
+  border-color: hsl(0, 90%, 50%);
+}
+.selectionBox > .selectionBoxButton:nth-child(2) {
+  border-color: hsl(72, 90%, 50%);
+}
+.selectionBox > .selectionBoxButton:nth-child(3) {
+  border-color: hsl(144, 90%, 50%);
+}
+.selectionBox > .selectionBoxButton:nth-child(4) {
+  border-color: hsl(216, 90%, 50%);
+}
+.selectionBox > .selectionBoxButton:nth-child(5) {
+  border-color: hsl(288, 90%, 50%);
+}
+.selectionBox > .selectionBoxButton.selected:nth-child(1) {
+  background-color: hsl(0, 90%, 50%);
+}
+.selectionBox > .selectionBoxButton.selected:nth-child(2) {
+  background-color: hsl(72, 90%, 50%);
+}
+.selectionBox > .selectionBoxButton.selected:nth-child(3) {
+  background-color: hsl(144, 90%, 50%);
+}
+.selectionBox > .selectionBoxButton.selected:nth-child(4) {
+  background-color: hsl(216, 90%, 50%);
+}
+.selectionBox > .selectionBoxButton.selected:nth-child(5) {
+  background-color: hsl(288, 90%, 50%);
+}
+.unique-0 {
+  color: hsl(0, 90%, 50%);
+}
+.unique-1 {
+  color: hsl(72, 90%, 50%);
+}
+.unique-2 {
+  color: hsl(144, 90%, 50%);
+}
+.unique-3 {
+  color: hsl(216, 90%, 50%);
+}
+.unique-4 {
+  color: hsl(288, 90%, 50%);
+}
+h2,
+h3 {
+  margin: .5ex 0;
+  font-size: 120%;
+}
+.breakAll {
+  word-break: break-all;
+}
+.stacked {
+  display: grid;
+  height: 100%;
+  grid-template-columns: 1fr;
+  grid-template-rows: auto 1fr;
+}
+.stacked > *:nth-child(2) {
+  margin-top: 1ex;
+}
+.tabNavigation {
+  display: flex;
+}
+.tabNavigation > * {
+  flex: 1;
+  text-align: center;
+  user-select: none;
+  padding: 5px 0;
+}
+.tabNavigation > .active {
+  background-color: hsl(180, 30%, 50%);
+}
+.tabNavigation > *:not(.active) {
+  cursor: pointer;
+}

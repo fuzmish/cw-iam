@@ -27,6 +27,7 @@ import {
 } from "./components/TabGroup"
 import { type GlobalStaticData, GlobalStaticDataContext } from "./context"
 import { fetchRoleData } from "./data"
+import { fromXson, toXson } from "./lib/xson"
 
 const MAX_SELECTION = 5
 
@@ -54,6 +55,56 @@ export function App() {
     indices: new Set([...Array(MAX_SELECTION).keys()].map(i => `${i}`)),
     state: {}
   })
+  const [roleSelectionInitialized, setRoleSelectionInitialized] = useState(false)
+
+  useEffect(() => {
+    // skip during data loading
+    if (!globalStaticData?.rolesById) {
+      return
+    }
+    // if initialized, sync the search value to the current selection state
+    if (roleSelectionInitialized) {
+      const compact: Record<string, string[]> = Object.fromEntries(
+        Object.entries(roleSelectionState.state)
+          .map(([key, state]) => [key, Object.keys(state).filter(index => state[index])])
+          .filter(([_, indices]) => indices.length)
+      )
+      if (Object.keys(compact).length) {
+        toXson(compact)
+          .then(payload =>
+            history.replaceState(null, "", `${location.origin}${location.pathname}?${payload}`)
+          )
+          .catch(err => console.error(err))
+      } else {
+        history.replaceState(null, "", `${location.origin}${location.pathname}`)
+      }
+    }
+    // else, do initialization; attempt to restore the selection state from the search value
+    else {
+      fromXson(location.search.slice(1))
+        .then(ret => {
+          if (!ret) {
+            return
+          }
+          const state: Record<string, Record<string, boolean>> = {}
+          for (const [key, indices] of Object.entries(ret)) {
+            if (key in globalStaticData.rolesById && Array.isArray(indices)) {
+              state[key] = Object.fromEntries(
+                indices
+                  .filter(index => roleSelectionState.indices.has(index))
+                  .map(index => [`${index}`, true])
+              )
+            }
+          }
+          if (Object.keys(state).length > 0) {
+            setRoleSelectionState({ ...roleSelectionState, state })
+          }
+        })
+        .catch(err => console.error(err))
+        .finally(() => setRoleSelectionInitialized(true))
+    }
+  }, [roleSelectionInitialized, globalStaticData, roleSelectionState])
+
   const roleSelectionManager: SelectionManager = {
     setIndices(indices) {
       setRoleSelectionState({ ...roleSelectionState, indices: new Set(indices) })
@@ -101,7 +152,7 @@ export function App() {
     }
   }
 
-  const [tabState, setTabState] = useState<TabState>({ currentTab: null })
+  const [tabState, setTabState] = useState<TabState>({ currentTab: "compare" })
   const tabManager: TabManager = {
     setCurrentTab(currentTab) {
       setTabState({ currentTab })

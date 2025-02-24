@@ -2,11 +2,10 @@
     "dockerFile": "./Dockerfile",
     "build": {
         "args": {
-            "PNPM_VERSION": "10.2.1"
+            "PNPM_VERSION": "10.4.1"
         }
     },
     "containerEnv": {
-        "DISPLAY": "dummy",
         "GIT_EDITOR": "code --wait"
     },
     "customizations": {
@@ -26,7 +25,7 @@
     "mounts": [
         {
             "type": "volume",
-            "source": "${devcontainerId}-pnpm-store",
+            "source": "devcontainer-${devcontainerId}-pnpm-store",
             "target": "/opt/pnpm/store"
         },
         {

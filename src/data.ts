@@ -10,7 +10,7 @@ export async function fetchRoleData(): Promise<{
 }> {
   // fetch data
   const url = import.meta.env.DEV
-    ? `${import.meta.env.BASE_URL}data/iam-dataset/gcp/role_permissions.json`
+    ? `${import.meta.env.BASE_URL}public/role_permissions.json`
     : "https://raw.githubusercontent.com/iann0036/iam-dataset/main/gcp/role_permissions.json"
   const res = await fetch(url)
   const json = await res.json()

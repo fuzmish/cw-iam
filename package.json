@@ -14,14 +14,14 @@
   },
   "dependencies": {
     "fuse.js": "^7.1.0",
-    "react": "^19.0.0",
+    "react": "^19.1.0",
     "react-dom": "^19.0.0",
     "react-resizable-panels": "^2.1.7",
     "react-virtuoso": "^4.12.6"
   },
   "devDependencies": {
     "@biomejs/biome": "^1.9.4",
-    "@types/react": "^19.0.10",
+    "@types/react": "^19.1.0",
     "@types/react-dom": "^19.0.4",
     "@vitejs/plugin-react-swc": "^3.8.1",
     "typescript": "^5.8.2",

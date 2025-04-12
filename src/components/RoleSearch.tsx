@@ -10,6 +10,7 @@ import { TabManagerContext } from "./TabGroup"
 const MAX_MATCHED_PERMISSIONS = 10
 
 export interface RoleSearchState {
+  readonly filterById: string
   readonly filterByName: string
   readonly filterByPermission: string
   readonly isFiltered: boolean
@@ -17,6 +18,7 @@ export interface RoleSearchState {
 }
 
 export interface RoleSearchManager {
+  setFilterIdName(value: string): void
   setFilterByName(value: string): void
   setFilterByPermission(value: string): void
 }
@@ -29,7 +31,13 @@ export function RoleSearchForm() {
   const roleSearchManager = use(RoleSearchManagerContext)
   return (
     <div>
-      Filter by role name{" "}
+      Filter by role id{" "}
+      <input
+        type="text"
+        value={roleSearchState?.filterById}
+        onChange={e => roleSearchManager?.setFilterIdName(e.target.value)}
+      />
+      , name{" "}
       <input
         type="text"
         value={roleSearchState?.filterByName}

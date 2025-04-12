@@ -124,11 +124,14 @@ export function App() {
     }
   }
 
+  const [filterById, setFilterIdName] = useState("")
   const [filterByName, setFilterByName] = useState("")
   const [filterByPermission, setFilterByPermission] = useState("")
   const searchArgs: Record<string, string> = {}
+  if (filterById) {
+    searchArgs.id = filterById
+  }
   if (filterByName) {
-    searchArgs.id = filterByName
     searchArgs.name = filterByName
   }
   if (filterByPermission) {
@@ -137,8 +140,13 @@ export function App() {
   const isFiltered = !!(globalStaticData?.fuseForRoles && Object.keys(searchArgs).length > 0)
   const allRoles = globalStaticData?.roles.map((item, refIndex) => ({ item, refIndex })) || []
   const result = isFiltered ? globalStaticData?.fuseForRoles.search(searchArgs) : allRoles
-  const roleSearchManager: RoleSearchManager = { setFilterByName, setFilterByPermission }
+  const roleSearchManager: RoleSearchManager = {
+    setFilterIdName,
+    setFilterByName,
+    setFilterByPermission
+  }
   const roleSearchState: RoleSearchState = {
+    filterById,
     filterByName,
     filterByPermission,
     isFiltered,

@@ -2,7 +2,8 @@
     "dockerFile": "./Dockerfile",
     "build": {
         "args": {
-            "PNPM_VERSION": "10.6.5"
+            // https://github.com/pnpm/pnpm/releases
+            "PNPM_VERSION": "10.8.0"
         }
     },
     "containerEnv": {

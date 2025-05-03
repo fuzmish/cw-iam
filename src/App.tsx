@@ -74,7 +74,7 @@ export function App() {
           .then(payload =>
             history.replaceState(null, "", `${location.origin}${location.pathname}?${payload}`)
           )
-          .catch(err => console.error(err))
+          .catch(err => console.warn(err))
       } else {
         history.replaceState(null, "", `${location.origin}${location.pathname}`)
       }
@@ -100,7 +100,7 @@ export function App() {
             setRoleSelectionState({ ...roleSelectionState, state })
           }
         })
-        .catch(err => console.error(err))
+        .catch(err => console.warn(err))
         .finally(() => setRoleSelectionInitialized(true))
     }
   }, [roleSelectionInitialized, globalStaticData, roleSelectionState])

@@ -3,7 +3,7 @@
     "build": {
         "args": {
             // https://github.com/pnpm/pnpm/releases
-            "PNPM_VERSION": "10.8.0"
+            "PNPM_VERSION": "10.10.0"
         }
     },
     "containerEnv": {

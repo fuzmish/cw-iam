@@ -10,7 +10,7 @@ export async function fetchRoleData(): Promise<{
 }> {
   // fetch data
   const url = import.meta.env.DEV
-    ? `${import.meta.env.BASE_URL}public/role_permissions.json`
+    ? `${import.meta.env.BASE_URL}role_permissions.json`
     : "https://raw.githubusercontent.com/iann0036/iam-dataset/main/gcp/role_permissions.json"
   const res = await fetch(url)
   const json = await res.json()
@@ -25,19 +25,14 @@ export async function fetchRoleData(): Promise<{
       if (!role && typeof role !== "object") {
         continue
       }
-      const roleId = role.id
-      const roleName = role.name
-      if (typeof roleId !== "string" || typeof roleName !== "string") {
+      const { id, name } = role
+      if (typeof id !== "string" || typeof name !== "string") {
         continue
       }
-      if (!(roleId in data)) {
-        data[roleId] = {
-          id: roleId,
-          name: roleName,
-          permissions: []
-        }
+      if (!(id in data)) {
+        data[id] = { id, name, permissions: [] }
       }
-      data[roleId].permissions.push(permission)
+      data[id].permissions.push(permission)
     }
   }
 

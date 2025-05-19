@@ -16,7 +16,7 @@
     "fuse.js": "^7.1.0",
     "react": "^19.1.0",
     "react-dom": "^19.1.0",
-    "react-resizable-panels": "^3.0.1",
+    "react-resizable-panels": "^3.0.2",
     "react-virtuoso": "^4.12.7"
   },
   "devDependencies": {

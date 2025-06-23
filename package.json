@@ -19,7 +19,7 @@
     "react": "^19.1.0",
     "react-dom": "^19.1.0",
     "react-resizable-panels": "^3.0.2",
-    "react-virtuoso": "^4.12.8"
+    "react-virtuoso": "^4.13.0"
   },
   "devDependencies": {
     "@biomejs/biome": "^1.9.4",

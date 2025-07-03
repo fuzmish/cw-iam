@@ -1,4 +1,4 @@
-import { type ReactNode, createContext, use } from "react"
+import { createContext, type ReactNode, use } from "react"
 
 export interface SelectionState {
   readonly indices: ReadonlySet<string>
@@ -36,6 +36,7 @@ export function SelectionBox({
   return (
     <span className="selectionBox">
       {Object.keys(state).map(index => (
+        // biome-ignore lint/a11y/noStaticElementInteractions: This span acts as a selection button
         <span
           key={index}
           className={[
@@ -43,6 +44,8 @@ export function SelectionBox({
             ...(state[index] ? ["selected"] : []),
             ...(readonly ? ["readonly"] : [])
           ].join(" ")}
+          role={readonly ? undefined : "button"}
+          tabIndex={readonly ? undefined : 0}
           onMouseDown={
             readonly
               ? undefined

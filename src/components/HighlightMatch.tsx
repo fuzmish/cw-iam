@@ -1,11 +1,11 @@
-import type { FuseResultMatch } from "fuse.js"
 import type { ReactNode } from "react"
+import type { SubstringMatch } from "../lib/search"
 
 export function HighlightMatch({
   value,
   indices,
   className = "highlight"
-}: Pick<FuseResultMatch, "value" | "indices"> & { className?: string }): ReactNode {
+}: Pick<SubstringMatch, "value" | "indices"> & { className?: string }): ReactNode {
   if (!value || !indices) {
     return value
   }

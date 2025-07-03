@@ -1,7 +1,7 @@
-import type { FuseResult } from "fuse.js"
-import { type ReactNode, createContext, use } from "react"
+import { createContext, type ReactNode, use } from "react"
 import { Virtuoso } from "react-virtuoso"
 import type { Role } from "../data"
+import type { SearchResult } from "../lib/search"
 import { HighlightMatch } from "./HighlightMatch"
 import { RoleDetailManagerContext, RoleDetailStateContext } from "./RoleDetails"
 import { SelectionBox } from "./SelectionBox"
@@ -14,7 +14,7 @@ export interface RoleSearchState {
   readonly filterByName: string
   readonly filterByPermission: string
   readonly isFiltered: boolean
-  readonly result: ReadonlyArray<Readonly<FuseResult<Role>>>
+  readonly result: ReadonlyArray<Readonly<SearchResult<Role>>>
 }
 
 export interface RoleSearchManager {
@@ -49,102 +49,7 @@ export function RoleSearchForm() {
         value={roleSearchState?.filterByPermission}
         onChange={e => roleSearchManager?.setFilterByPermission(e.target.value)}
       />
-      <details>
-        <summary>You can use extended search expressions.</summary>
-        <a
-          href="https://www.fusejs.io/examples.html#extended-search"
-          target="_blank"
-          rel="noreferrer"
-        >
-          (fuse.js)
-        </a>{" "}
-        White space acts as an <strong>AND</strong> operator, while a single pipe (<code>|</code>)
-        character acts as an <strong>OR</strong> operator. To escape white space, use double quote
-        ex. <code>=&quot;scheme language&quot;</code> for exact match.
-        <table>
-          <thead>
-            <tr>
-              <th>Token</th>
-              <th>Match type</th>
-              <th>Description</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr>
-              <td>
-                <code>jscript</code>
-              </td>
-              <td>fuzzy-match</td>
-              <td>
-                Items that fuzzy match <code>jscript</code>
-              </td>
-            </tr>
-            <tr>
-              <td>
-                <code>=scheme</code>
-              </td>
-              <td>exact-match</td>
-              <td>
-                Items that are <code>scheme</code>
-              </td>
-            </tr>
-            <tr>
-              <td>
-                <code>&apos;python</code>
-              </td>
-              <td>include-match</td>
-              <td>
-                Items that include <code>python</code>
-              </td>
-            </tr>
-            <tr>
-              <td>
-                <code>!ruby</code>
-              </td>
-              <td>inverse-exact-match</td>
-              <td>
-                Items that do not include <code>ruby</code>
-              </td>
-            </tr>
-            <tr>
-              <td>
-                <code>^java</code>
-              </td>
-              <td>prefix-exact-match</td>
-              <td>
-                Items that start with <code>java</code>
-              </td>
-            </tr>
-            <tr>
-              <td>
-                <code>!^earlang</code>
-              </td>
-              <td>inverse-prefix-exact-match</td>
-              <td>
-                Items that do not start with <code>earlang</code>
-              </td>
-            </tr>
-            <tr>
-              <td>
-                <code>.js$</code>
-              </td>
-              <td>suffix-exact-match</td>
-              <td>
-                Items that end with <code>.js</code>
-              </td>
-            </tr>
-            <tr>
-              <td>
-                <code>!.go$</code>
-              </td>
-              <td>inverse-suffix-exact-match</td>
-              <td>
-                Items that do not end with <code>.go</code>
-              </td>
-            </tr>
-          </tbody>
-        </table>
-      </details>
+      <br />
       <span>
         {roleSearchState?.isFiltered ? "Found" : "Total"} {roleSearchState?.result.length || 0}{" "}
         roles.
@@ -167,7 +72,7 @@ export function RoleSearchResult() {
 export function RoleSearchResultItem({
   item,
   matches
-}: Pick<FuseResult<Role>, "item" | "matches">) {
+}: Pick<SearchResult<Role>, "item" | "matches">) {
   const roleSearchState = use(RoleSearchStateContext)
   const roleDetailManager = use(RoleDetailManagerContext)
   const roleDetailState = use(RoleDetailStateContext)
@@ -194,8 +99,12 @@ export function RoleSearchResultItem({
   return (
     <div>
       <SelectionBox selectionKey={item.id} />{" "}
+      {/* biome-ignore lint/a11y/noStaticElementInteractions: This span acts as a clickable role selection */}
+      {/* biome-ignore lint/a11y/useButtonType: Changing to button would require significant styling changes */}
       <span
         className="hoverHighlight"
+        role="button"
+        tabIndex={0}
         onMouseDown={e => {
           e.preventDefault()
           if (roleDetailState?.selectedRoleId === item.id) {

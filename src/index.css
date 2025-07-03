@@ -24,7 +24,16 @@ body,
   color: yellow;
   font-weight: bold;
 }
-.hoverHighlight:hover,
+.tabNavigation > * {
+  flex: 1;
+  text-align: center;
+  user-select: none;
+  padding: 5px 0;
+}
+.hoverHighlight:hover {
+  color: gray;
+  cursor: pointer;
+}
 .hoverHighlight:hover * {
   color: gray;
   cursor: pointer;
@@ -42,16 +51,16 @@ ul.permissionMatches li {
 }
 .selectionBox > .selectionBoxButton {
   display: inline-block;
-  width: .8em;
-  height: .8em;
-  margin: .1em;
+  width: 0.8em;
+  height: 0.8em;
+  margin: 0.1em;
   vertical-align: middle;
   user-select: none;
   border: 2px solid transparent;
 }
 .selectionBox > .selectionBoxButton:not(.readonly) {
   cursor: pointer;
-  border-radius: .5em;
+  border-radius: 0.5em;
 }
 .selectionBox > .selectionBoxButton:nth-child(1) {
   border-color: hsl(0, 90%, 50%);
@@ -100,7 +109,7 @@ ul.permissionMatches li {
 }
 h2,
 h3 {
-  margin: .5ex 0;
+  margin: 0.5ex 0;
   font-size: 120%;
 }
 .breakAll {
@@ -117,12 +126,6 @@ h3 {
 }
 .tabNavigation {
   display: flex;
-}
-.tabNavigation > * {
-  flex: 1;
-  text-align: center;
-  user-select: none;
-  padding: 5px 0;
 }
 .tabNavigation > .active {
   background-color: hsl(180, 30%, 50%);

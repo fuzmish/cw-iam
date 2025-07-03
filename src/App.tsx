@@ -1,6 +1,4 @@
-import Fuse from "fuse.js"
 import { useEffect, useState } from "react"
-import { Layout } from "./Layout"
 import {
   type RoleDetailManager,
   RoleDetailManagerContext,
@@ -26,28 +24,39 @@ import {
   TabStateContext
 } from "./components/TabGroup"
 import { type GlobalStaticData, GlobalStaticDataContext } from "./context"
-import { fetchRoleData } from "./data"
+import { fetchRoleData, type Role } from "./data"
+import { Layout } from "./Layout"
+import { type SubstringMatch, search } from "./lib/search"
 import { fromXson, toXson } from "./lib/xson"
 
 const MAX_SELECTION = 5
 
 export function App() {
   const [globalStaticData, setGlobalStaticData] = useState<GlobalStaticData | null>(null)
+  const [permissionRoleList, setPermissionRoleList] = useState<
+    { permission: string; roles: Role[] }[]
+  >([])
 
   useEffect(() => {
     fetchRoleData().then(({ roles, rolesById }) => {
-      const fuseForRoles = new Fuse(roles, {
-        includeMatches: true,
-        keys: ["id", "name", "permissions"],
-        useExtendedSearch: true,
-        shouldSort: true,
-        minMatchCharLength: 2
-      })
       setGlobalStaticData({
         rolesById,
-        roles,
-        fuseForRoles
+        roles
       })
+      const permissionToRoles: Record<string, Set<Role>> = {}
+      for (const role of roles) {
+        for (const perm of role.permissions) {
+          const p = perm.toLowerCase()
+          if (!permissionToRoles[p]) permissionToRoles[p] = new Set()
+          permissionToRoles[p].add(role)
+        }
+      }
+      setPermissionRoleList(
+        Object.entries(permissionToRoles).map(([permission, roles]) => ({
+          permission,
+          roles: Array.from(roles)
+        }))
+      )
     })
   }, [])
 
@@ -127,19 +136,67 @@ export function App() {
   const [filterById, setFilterIdName] = useState("")
   const [filterByName, setFilterByName] = useState("")
   const [filterByPermission, setFilterByPermission] = useState("")
-  const searchArgs: Record<string, string> = {}
-  if (filterById) {
-    searchArgs.id = filterById
+  const isFiltered = !!(globalStaticData && (filterById || filterByName || filterByPermission))
+
+  let filteredRoles: Role[] = globalStaticData?.roles || []
+  const idMatches: { [id: string]: SubstringMatch } = {}
+  const nameMatches: { [id: string]: SubstringMatch } = {}
+  const permissionMatches: { [id: string]: SubstringMatch[] } = {}
+  if (globalStaticData) {
+    // filter by role id
+    const idResult = search(filteredRoles, r => r.id, filterById)
+    filteredRoles = idResult.map(r => r.item)
+    for (const r of idResult) {
+      if (r.match) {
+        idMatches[r.item.id] = { ...r.match, key: "id" }
+      }
+    }
+
+    // filter by role name
+    const nameResult = search(filteredRoles, r => r.name, filterByName)
+    filteredRoles = nameResult.map(r => r.item)
+    for (const r of nameResult) {
+      if (r.match) {
+        nameMatches[r.item.id] = { ...r.match, key: "name" }
+      }
+    }
+
+    // filter by permission
+    let filteredPermissionRoles: {
+      item: { permission: string; roles: Role[] }
+      match?: SubstringMatch
+    }[] = permissionRoleList.map(item => ({ item }))
+    if (filterByPermission) {
+      filteredPermissionRoles = search(permissionRoleList, pz => pz.permission, filterByPermission)
+      const allowedRoleIds = new Set(
+        filteredPermissionRoles.flatMap(pz => pz.item.roles.map(r => r.id))
+      )
+      filteredRoles = filteredRoles.filter(r => allowedRoleIds.has(r.id))
+      for (const pz of filteredPermissionRoles) {
+        for (const role of pz.item.roles) {
+          if (!permissionMatches[role.id]) {
+            permissionMatches[role.id] = []
+          }
+          if (pz.match) {
+            permissionMatches[role.id].push({ ...pz.match, key: "permissions" })
+          }
+        }
+      }
+    }
   }
-  if (filterByName) {
-    searchArgs.name = filterByName
+
+  // generate matches array
+  let result: { item: Role; matches: SubstringMatch[]; refIndex: number }[] = []
+  if (filteredRoles.length > 0) {
+    result = filteredRoles.map((role, refIndex) => {
+      const matches: SubstringMatch[] = []
+      if (idMatches[role.id]) matches.push(idMatches[role.id])
+      if (nameMatches[role.id]) matches.push(nameMatches[role.id])
+      if (permissionMatches[role.id]) matches.push(...permissionMatches[role.id])
+      return { item: role, matches, refIndex }
+    })
   }
-  if (filterByPermission) {
-    searchArgs.permissions = filterByPermission
-  }
-  const isFiltered = !!(globalStaticData?.fuseForRoles && Object.keys(searchArgs).length > 0)
-  const allRoles = globalStaticData?.roles.map((item, refIndex) => ({ item, refIndex })) || []
-  const result = isFiltered ? globalStaticData?.fuseForRoles.search(searchArgs) : allRoles
+
   const roleSearchManager: RoleSearchManager = {
     setFilterIdName,
     setFilterByName,

@@ -21,7 +21,7 @@ export function TabGroup({ tabs }: { tabs: Tab[] }) {
   const tabState = use(TabStateContext)
   const tabManager = use(TabManagerContext)
 
-  let currentTab: Tab | undefined = undefined
+  let currentTab: Tab | undefined 
   if (typeof tabState?.currentTab === "string") {
     currentTab = tabs.find(t => t.key === tabState.currentTab)
   }

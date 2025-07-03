@@ -1,4 +1,4 @@
-import { type ReactNode, createContext, use } from "react"
+import { createContext, type ReactNode, use } from "react"
 
 export interface TabState {
   readonly currentTab: string | null
@@ -21,7 +21,7 @@ export function TabGroup({ tabs }: { tabs: Tab[] }) {
   const tabState = use(TabStateContext)
   const tabManager = use(TabManagerContext)
 
-  let currentTab: Tab | undefined 
+  let currentTab: Tab | undefined
   if (typeof tabState?.currentTab === "string") {
     currentTab = tabs.find(t => t.key === tabState.currentTab)
   }
@@ -33,9 +33,13 @@ export function TabGroup({ tabs }: { tabs: Tab[] }) {
     <div className="tabGroup stacked">
       <div className="tabNavigation">
         {tabs.map(tab => (
+          // biome-ignore lint/a11y/noStaticElementInteractions: This div acts as a tab navigation button
+          // biome-ignore lint/a11y/useButtonType: Changing to button would require significant styling changes
           <div
             className={tab.key === currentTab?.key ? "active" : undefined}
             key={tab.key}
+            role="button"
+            tabIndex={0}
             onMouseDown={() => tabManager?.setCurrentTab(tab.key)}
           >
             {tab.title}

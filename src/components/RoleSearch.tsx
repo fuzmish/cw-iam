@@ -1,5 +1,5 @@
 import type { FuseResult } from "fuse.js"
-import { type ReactNode, createContext, use } from "react"
+import { createContext, type ReactNode, use } from "react"
 import { Virtuoso } from "react-virtuoso"
 import type { Role } from "../data"
 import { HighlightMatch } from "./HighlightMatch"
@@ -194,8 +194,12 @@ export function RoleSearchResultItem({
   return (
     <div>
       <SelectionBox selectionKey={item.id} />{" "}
+      {/* biome-ignore lint/a11y/noStaticElementInteractions: This span acts as a clickable role selection */}
+      {/* biome-ignore lint/a11y/useButtonType: Changing to button would require significant styling changes */}
       <span
         className="hoverHighlight"
+        role="button"
+        tabIndex={0}
         onMouseDown={e => {
           e.preventDefault()
           if (roleDetailState?.selectedRoleId === item.id) {

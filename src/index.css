@@ -24,7 +24,16 @@ body,
   color: yellow;
   font-weight: bold;
 }
-.hoverHighlight:hover,
+.tabNavigation > * {
+  flex: 1;
+  text-align: center;
+  user-select: none;
+  padding: 5px 0;
+}
+.hoverHighlight:hover {
+  color: gray;
+  cursor: pointer;
+}
 .hoverHighlight:hover * {
   color: gray;
   cursor: pointer;
@@ -117,12 +126,6 @@ h3 {
 }
 .tabNavigation {
   display: flex;
-}
-.tabNavigation > * {
-  flex: 1;
-  text-align: center;
-  user-select: none;
-  padding: 5px 0;
 }
 .tabNavigation > .active {
   background-color: hsl(180, 30%, 50%);

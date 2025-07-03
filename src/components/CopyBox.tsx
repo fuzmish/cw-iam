@@ -4,6 +4,8 @@ export function CopyBox(props: ComponentProps<"span">) {
   return (
     <span
       {...props}
+      role="button"
+      tabIndex={0}
       onMouseDown={e => {
         const selection = document.getSelection()
         if (selection && e.target instanceof Node) {

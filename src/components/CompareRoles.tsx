@@ -3,8 +3,7 @@ import { Virtuoso } from "react-virtuoso"
 import { GlobalStaticDataContext } from "../context"
 import { CopyBox } from "./CopyBox"
 import { RoleDetailManagerContext } from "./RoleDetails"
-import { SelectionManagerContext, SelectionStateContext } from "./SelectionBox"
-import { SelectionBox } from "./SelectionBox"
+import { SelectionBox, SelectionManagerContext, SelectionStateContext } from "./SelectionBox"
 import { TabManagerContext } from "./TabGroup"
 
 export function CompareRoles() {
@@ -38,8 +37,12 @@ export function CompareRoles() {
           {selectedRoles.map(roleId => (
             <div key={roleId}>
               <SelectionBox selectionKey={roleId} />{" "}
+              {/* biome-ignore lint/a11y/noStaticElementInteractions: This span acts as a clickable role link */}
+              {/* biome-ignore lint/a11y/useButtonType: Changing to button would require significant styling changes */}
               <span
                 className="hoverHighlight"
+                role="button"
+                tabIndex={0}
                 onMouseDown={e => {
                   e.preventDefault()
                   roleDetailManager?.selectedRole(roleId)

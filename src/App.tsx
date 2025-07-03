@@ -26,16 +26,16 @@ import {
 import { type GlobalStaticData, GlobalStaticDataContext } from "./context"
 import { fetchRoleData, type Role } from "./data"
 import { Layout } from "./Layout"
-import { type SubstringMatch, searchWithIndices, substringMatch } from "./lib/search"
+import { type SubstringMatch, search } from "./lib/search"
 import { fromXson, toXson } from "./lib/xson"
 
 const MAX_SELECTION = 5
 
 export function App() {
   const [globalStaticData, setGlobalStaticData] = useState<GlobalStaticData | null>(null)
-  const [permissionToRoleIds, setPermissionToRoleIds] = useState<Map<string, Set<string>> | null>(
-    null
-  )
+  const [permissionRoleList, setPermissionRoleList] = useState<
+    { permission: string; roles: Role[] }[]
+  >([])
 
   useEffect(() => {
     fetchRoleData().then(({ roles, rolesById }) => {
@@ -43,16 +43,20 @@ export function App() {
         rolesById,
         roles
       })
-      // permission→role idの辞書を構築
-      const map = new Map<string, Set<string>>()
+      const permissionToRoles: Record<string, Set<Role>> = {}
       for (const role of roles) {
         for (const perm of role.permissions) {
           const p = perm.toLowerCase()
-          if (!map.has(p)) map.set(p, new Set())
-          map.get(p)?.add(role.id)
+          if (!permissionToRoles[p]) permissionToRoles[p] = new Set()
+          permissionToRoles[p].add(role)
         }
       }
-      setPermissionToRoleIds(map)
+      setPermissionRoleList(
+        Object.entries(permissionToRoles).map(([permission, roles]) => ({
+          permission,
+          roles: Array.from(roles)
+        }))
+      )
     })
   }, [])
 
@@ -133,50 +137,66 @@ export function App() {
   const [filterByName, setFilterByName] = useState("")
   const [filterByPermission, setFilterByPermission] = useState("")
   const isFiltered = !!(globalStaticData && (filterById || filterByName || filterByPermission))
-  let filteredRoles = globalStaticData?.roles || []
-  // id, name, permissionごとに部分一致したroleのみを残す
-  if (isFiltered && globalStaticData) {
-    if (filterById) {
-      filteredRoles = searchWithIndices(filteredRoles, filterById, r => r.id, "id").map(r => r.item)
+
+  let filteredRoles: Role[] = globalStaticData?.roles || []
+  const idMatches: { [id: string]: SubstringMatch } = {}
+  const nameMatches: { [id: string]: SubstringMatch } = {}
+  const permissionMatches: { [id: string]: SubstringMatch[] } = {}
+  if (globalStaticData) {
+    // filter by role id
+    const idResult = search(filteredRoles, r => r.id, filterById)
+    filteredRoles = idResult.map(r => r.item)
+    for (const r of idResult) {
+      if (r.match) {
+        idMatches[r.item.id] = { ...r.match, key: "id" }
+      }
     }
-    if (filterByName) {
-      filteredRoles = searchWithIndices(filteredRoles, filterByName, r => r.name, "name").map(
-        r => r.item
+
+    // filter by role name
+    const nameResult = search(filteredRoles, r => r.name, filterByName)
+    filteredRoles = nameResult.map(r => r.item)
+    for (const r of nameResult) {
+      if (r.match) {
+        nameMatches[r.item.id] = { ...r.match, key: "name" }
+      }
+    }
+
+    // filter by permission
+    let filteredPermissionRoles: {
+      item: { permission: string; roles: Role[] }
+      match?: SubstringMatch
+    }[] = permissionRoleList.map(item => ({ item }))
+    if (filterByPermission) {
+      filteredPermissionRoles = search(permissionRoleList, pz => pz.permission, filterByPermission)
+      const allowedRoleIds = new Set(
+        filteredPermissionRoles.flatMap(pz => pz.item.roles.map(r => r.id))
       )
-    }
-    if (filterByPermission && permissionToRoleIds) {
-      const matchedRoleIds = new Set<string>()
-      const q = filterByPermission.toLowerCase()
-      for (const [perm, ids] of permissionToRoleIds) {
-        if (perm.includes(q)) {
-          for (const id of ids) matchedRoleIds.add(id)
+      filteredRoles = filteredRoles.filter(r => allowedRoleIds.has(r.id))
+      for (const pz of filteredPermissionRoles) {
+        for (const role of pz.item.roles) {
+          if (!permissionMatches[role.id]) {
+            permissionMatches[role.id] = []
+          }
+          if (pz.match) {
+            permissionMatches[role.id].push({ ...pz.match, key: "permissions" })
+          }
         }
       }
-      filteredRoles = filteredRoles.filter(role => matchedRoleIds.has(role.id))
     }
   }
-  // matches配列を生成
+
+  // generate matches array
   let result: { item: Role; matches: SubstringMatch[]; refIndex: number }[] = []
-  if (globalStaticData) {
+  if (filteredRoles.length > 0) {
     result = filteredRoles.map((role, refIndex) => {
       const matches: SubstringMatch[] = []
-      if (filterById) {
-        const m = substringMatch(role.id, filterById, "id")
-        if (m) matches.push(m)
-      }
-      if (filterByName) {
-        const m = substringMatch(role.name, filterByName, "name")
-        if (m) matches.push(m)
-      }
-      if (filterByPermission) {
-        for (const perm of role.permissions) {
-          const m = substringMatch(perm, filterByPermission, "permissions")
-          if (m) matches.push(m)
-        }
-      }
+      if (idMatches[role.id]) matches.push(idMatches[role.id])
+      if (nameMatches[role.id]) matches.push(nameMatches[role.id])
+      if (permissionMatches[role.id]) matches.push(...permissionMatches[role.id])
       return { item: role, matches, refIndex }
     })
   }
+
   const roleSearchManager: RoleSearchManager = {
     setFilterIdName,
     setFilterByName,

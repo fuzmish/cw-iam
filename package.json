@@ -15,7 +15,6 @@
     "add-latest-dev": "set -x && npm install --save-dev $(node -e 'console.log(Object.keys(require(\"./package.json\").devDependencies).map(p => `${p}@latest`).join(\" \"))')"
   },
   "dependencies": {
-    "fuse.js": "^7.1.0",
     "react": "^19.1.0",
     "react-dom": "^19.1.0",
     "react-resizable-panels": "^3.0.3",

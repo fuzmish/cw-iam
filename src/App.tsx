@@ -1,6 +1,4 @@
-import Fuse from "fuse.js"
 import { useEffect, useState } from "react"
-import { Layout } from "./Layout"
 import {
   type RoleDetailManager,
   RoleDetailManagerContext,
@@ -26,28 +24,35 @@ import {
   TabStateContext
 } from "./components/TabGroup"
 import { type GlobalStaticData, GlobalStaticDataContext } from "./context"
-import { fetchRoleData } from "./data"
+import { fetchRoleData, type Role } from "./data"
+import { Layout } from "./Layout"
+import { type SubstringMatch, searchWithIndices, substringMatch } from "./lib/search"
 import { fromXson, toXson } from "./lib/xson"
 
 const MAX_SELECTION = 5
 
 export function App() {
   const [globalStaticData, setGlobalStaticData] = useState<GlobalStaticData | null>(null)
+  const [permissionToRoleIds, setPermissionToRoleIds] = useState<Map<string, Set<string>> | null>(
+    null
+  )
 
   useEffect(() => {
     fetchRoleData().then(({ roles, rolesById }) => {
-      const fuseForRoles = new Fuse(roles, {
-        includeMatches: true,
-        keys: ["id", "name", "permissions"],
-        useExtendedSearch: true,
-        shouldSort: true,
-        minMatchCharLength: 2
-      })
       setGlobalStaticData({
         rolesById,
-        roles,
-        fuseForRoles
+        roles
       })
+      // permission→role idの辞書を構築
+      const map = new Map<string, Set<string>>()
+      for (const role of roles) {
+        for (const perm of role.permissions) {
+          const p = perm.toLowerCase()
+          if (!map.has(p)) map.set(p, new Set())
+          map.get(p)?.add(role.id)
+        }
+      }
+      setPermissionToRoleIds(map)
     })
   }, [])
 
@@ -127,19 +132,51 @@ export function App() {
   const [filterById, setFilterIdName] = useState("")
   const [filterByName, setFilterByName] = useState("")
   const [filterByPermission, setFilterByPermission] = useState("")
-  const searchArgs: Record<string, string> = {}
-  if (filterById) {
-    searchArgs.id = filterById
+  const isFiltered = !!(globalStaticData && (filterById || filterByName || filterByPermission))
+  let filteredRoles = globalStaticData?.roles || []
+  // id, name, permissionごとに部分一致したroleのみを残す
+  if (isFiltered && globalStaticData) {
+    if (filterById) {
+      filteredRoles = searchWithIndices(filteredRoles, filterById, r => r.id, "id").map(r => r.item)
+    }
+    if (filterByName) {
+      filteredRoles = searchWithIndices(filteredRoles, filterByName, r => r.name, "name").map(
+        r => r.item
+      )
+    }
+    if (filterByPermission && permissionToRoleIds) {
+      const matchedRoleIds = new Set<string>()
+      const q = filterByPermission.toLowerCase()
+      for (const [perm, ids] of permissionToRoleIds) {
+        if (perm.includes(q)) {
+          for (const id of ids) matchedRoleIds.add(id)
+        }
+      }
+      filteredRoles = filteredRoles.filter(role => matchedRoleIds.has(role.id))
+    }
   }
-  if (filterByName) {
-    searchArgs.name = filterByName
+  // matches配列を生成
+  let result: { item: Role; matches: SubstringMatch[]; refIndex: number }[] = []
+  if (globalStaticData) {
+    result = filteredRoles.map((role, refIndex) => {
+      const matches: SubstringMatch[] = []
+      if (filterById) {
+        const m = substringMatch(role.id, filterById, "id")
+        if (m) matches.push(m)
+      }
+      if (filterByName) {
+        const m = substringMatch(role.name, filterByName, "name")
+        if (m) matches.push(m)
+      }
+      if (filterByPermission) {
+        for (const perm of role.permissions) {
+          const m = substringMatch(perm, filterByPermission, "permissions")
+          if (m) matches.push(m)
+        }
+      }
+      return { item: role, matches, refIndex }
+    })
   }
-  if (filterByPermission) {
-    searchArgs.permissions = filterByPermission
-  }
-  const isFiltered = !!(globalStaticData?.fuseForRoles && Object.keys(searchArgs).length > 0)
-  const allRoles = globalStaticData?.roles.map((item, refIndex) => ({ item, refIndex })) || []
-  const result = isFiltered ? globalStaticData?.fuseForRoles.search(searchArgs) : allRoles
   const roleSearchManager: RoleSearchManager = {
     setFilterIdName,
     setFilterByName,

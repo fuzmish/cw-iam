@@ -1,34 +1,34 @@
 {
-    "[typescript]": {
-        "editor.defaultFormatter": "biomejs.biome",
-        "editor.formatOnSave": true,
-        "editor.codeActionsOnSave": {
-            "source.addMissingImports.ts": "always",
-            "source.fixAll.biome": "always",
-            "source.fixAll.ts": "never",
-            "source.organizeImports": "never",
-            "source.organizeImports.biome": "always",
-            "source.removeUnused.ts": "never",
-            "source.removeUnusedImports": "never",
-            "source.sortImports": "never"
-        }
-    },
-    "[typescriptreact]": {
-        "editor.defaultFormatter": "biomejs.biome",
-        "editor.formatOnSave": true,
-        "editor.codeActionsOnSave": {
-            "source.addMissingImports.ts": "always",
-            "source.fixAll.biome": "always",
-            "source.fixAll.ts": "never",
-            "source.organizeImports": "never",
-            "source.organizeImports.biome": "always",
-            "source.removeUnused.ts": "never",
-            "source.removeUnusedImports": "never",
-            "source.sortImports": "never"
-        }
-    },
-    "[json]": {
-        "editor.defaultFormatter": "vscode.json-language-features",
-        "editor.formatOnSave": false
+  "[typescript]": {
+    "editor.defaultFormatter": "biomejs.biome",
+    "editor.formatOnSave": true,
+    "editor.codeActionsOnSave": {
+      "source.addMissingImports.ts": "always",
+      "source.fixAll.biome": "always",
+      "source.fixAll.ts": "never",
+      "source.organizeImports": "never",
+      "source.organizeImports.biome": "always",
+      "source.removeUnused.ts": "never",
+      "source.removeUnusedImports": "never",
+      "source.sortImports": "never"
     }
+  },
+  "[typescriptreact]": {
+    "editor.defaultFormatter": "biomejs.biome",
+    "editor.formatOnSave": true,
+    "editor.codeActionsOnSave": {
+      "source.addMissingImports.ts": "always",
+      "source.fixAll.biome": "always",
+      "source.fixAll.ts": "never",
+      "source.organizeImports": "never",
+      "source.organizeImports.biome": "always",
+      "source.removeUnused.ts": "never",
+      "source.removeUnusedImports": "never",
+      "source.sortImports": "never"
+    }
+  },
+  "[json][jsonc]": {
+    "editor.defaultFormatter": "biomejs.biome",
+    "editor.formatOnSave": true
+  }
 }

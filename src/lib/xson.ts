@@ -1,23 +1,27 @@
-export async function toXson(
-  obj: unknown,
-  format: CompressionFormat = "deflate-raw"
-): Promise<string> {
-  const input = new Blob([JSON.stringify(obj)]).stream()
-  const processor = new CompressionStream(format)
-  const output = new Response(input.pipeThrough(processor))
-  const result = btoa(
-    [...new Uint8Array(await output.arrayBuffer())].map(c => String.fromCharCode(c)).join("")
-  )
-  return result
+const MAGIC = "88son.v1$"
+
+export function toXson(obj: unknown): string {
+  const jsonString = JSON.stringify(obj)
+  const encoder = new TextEncoder()
+  const bytes = encoder.encode(jsonString)
+  let binary = ""
+  for (let i = 0; i < bytes.length; i++) {
+    binary += String.fromCharCode(bytes[i])
+  }
+  return btoa(MAGIC + binary)
 }
 
-export async function fromXson(
-  payload: string,
-  format: CompressionFormat = "deflate-raw"
-): Promise<unknown> {
-  const input = new Blob([new Uint8Array([...atob(payload)].map(s => s.charCodeAt(0)))]).stream()
-  const processor = new DecompressionStream(format)
-  const output = new Response(input.pipeThrough(processor))
-  const result = await output.json()
-  return result
+export function fromXson(payload: string): unknown {
+  let binary = atob(payload)
+  if (!binary.startsWith(MAGIC)) {
+    throw new Error("Invalid payload")
+  }
+  binary = binary.slice(MAGIC.length)
+  const bytes = new Uint8Array(binary.length)
+  for (let i = 0; i < binary.length; i++) {
+    bytes[i] = binary.charCodeAt(i)
+  }
+  const decoder = new TextDecoder()
+  const jsonString = decoder.decode(bytes)
+  return JSON.parse(jsonString)
 }

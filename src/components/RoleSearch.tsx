@@ -69,10 +69,7 @@ export function RoleSearchResult() {
   )
 }
 
-export function RoleSearchResultItem({
-  item,
-  matches
-}: Pick<SearchResult<Role>, "item" | "matches">) {
+export function RoleSearchResultItem({ item, matches }: SearchResult<Role>) {
   const roleSearchState = use(RoleSearchStateContext)
   const roleDetailManager = use(RoleDetailManagerContext)
   const roleDetailState = use(RoleDetailStateContext)
@@ -81,7 +78,7 @@ export function RoleSearchResultItem({
   const matchName = matches?.find(m => m.key === "name")
   const permissions: { key: string; node: ReactNode }[] = []
   if (roleSearchState?.filterByPermission) {
-    const matchPermissions = matches?.filter(m => m.key === "permissions") || []
+    const matchPermissions = matches?.filter(m => m.key === "permission") || []
     for (const matchPermission of matchPermissions.slice(0, MAX_MATCHED_PERMISSIONS)) {
       permissions.push({
         key: matchPermission.value || "",

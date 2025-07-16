@@ -37,8 +37,7 @@ export function CompareRoles() {
           {selectedRoles.map(roleId => (
             <div key={roleId}>
               <SelectionBox selectionKey={roleId} />{" "}
-              {/* biome-ignore lint/a11y/noStaticElementInteractions: This span acts as a clickable role link */}
-              {/* biome-ignore lint/a11y/useButtonType: Changing to button would require significant styling changes */}
+              {/** biome-ignore lint/a11y/useSemanticElements: This is a clickable role link */}
               <span
                 className="hoverHighlight"
                 role="button"

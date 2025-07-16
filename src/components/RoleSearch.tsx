@@ -96,8 +96,7 @@ export function RoleSearchResultItem({ item, matches }: SearchResult<Role>) {
   return (
     <div>
       <SelectionBox selectionKey={item.id} />{" "}
-      {/* biome-ignore lint/a11y/noStaticElementInteractions: This span acts as a clickable role selection */}
-      {/* biome-ignore lint/a11y/useButtonType: Changing to button would require significant styling changes */}
+      {/** biome-ignore lint/a11y/useSemanticElements: This is a clickable role link */}
       <span
         className="hoverHighlight"
         role="button"

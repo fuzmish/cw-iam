@@ -33,8 +33,7 @@ export function TabGroup({ tabs }: { tabs: Tab[] }) {
     <div className="tabGroup stacked">
       <div className="tabNavigation">
         {tabs.map(tab => (
-          // biome-ignore lint/a11y/noStaticElementInteractions: This div acts as a tab navigation button
-          // biome-ignore lint/a11y/useButtonType: Changing to button would require significant styling changes
+          // biome-ignore lint/a11y/useSemanticElements: This is a clickable tab navigation button
           <div
             className={tab.key === currentTab?.key ? "active" : undefined}
             key={tab.key}
